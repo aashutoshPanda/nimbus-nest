@@ -17,12 +17,17 @@ import {
   ListItemAvatar,
 } from "@material-ui/core";
 import AddFile from "./App-multi-file";
-import { token, baseURL } from "../../axios";
-import axios from "axios";
-import { fileUploadLoader } from "../../store/slices/loaderSlice";
-import { pushToCurrentStack } from "../../store/slices/structureSlice";
+// import { token, baseURL } from "../../axios";
+// import axios from "axios";
+import { normalLoader } from "../../store/slices/loaderSlice";
+import { updateChild } from "../../store/slices/structureSlice";
+
+import { updateStorageData } from "../../store/slices/authSlice";
 // import FileBackdropLoader from '../Loaders/fileUploadBackdrop'
 import DescriptionIcon from "@material-ui/icons/Description";
+
+import API from "../../axios";
+import { error, success } from "../../store/slices/logSlice";
 
 export default function FormDialog(props) {
   const [open, setOpen] = React.useState(false);
@@ -30,13 +35,12 @@ export default function FormDialog(props) {
     PARENT: props.parent,
     NAME: "",
     DRIVE_URL: "",
+    REPLACE: false,
   });
 
   // let loading = useSelector(fileLoading);
 
   const dispatch = useDispatch();
-
-  const [progress, setProgress] = React.useState(0);
 
   let inputChangeHandler = (e) => {
     setState({
@@ -54,41 +58,33 @@ export default function FormDialog(props) {
   };
 
   let uploadLink = () => {
-    setProgress(0);
-    dispatch(fileUploadLoader());
-    axios({
-      method: "post",
-      headers: {
-        Authorization: `Token ${token}`,
-      },
-      data: state,
-      url: `${baseURL}/api/file/upload-by-url/`,
-      onUploadProgress: (ev) => {
-        const prog = (ev.loaded / ev.total) * 100;
-        setProgress(Math.round(prog));
-        console.log({ progress });
-      },
-    })
+    // /api/file/upload-by-url/
+
+    dispatch(normalLoader());
+
+    API.post("/api/file/upload-by-url/", state)
       .then((res) => {
-        let newData = {
-          data: res.data,
-          type: "file",
-        };
-        dispatch(pushToCurrentStack(newData));
-        dispatch(fileUploadLoader());
+        // console.log(res.data);
+        dispatch(updateChild(res.data.file_data));
+        const { readable, ratio } = res.data;
+        dispatch(updateStorageData({ readable, ratio }));
+        dispatch(normalLoader());
+        dispatch(success("Your Action was Successful"));
         handleClose();
       })
       .catch((err) => {
-        dispatch(fileUploadLoader());
-        handleClose();
         console.log(err);
+        dispatch(normalLoader());
+        handleClose();
+        //console.log(err.response)
+        dispatch(error(err.response.data.message));
       });
   };
 
   return (
     <div>
       {/* <FileBackdropLoader progress={progress} show={loading} /> */}
-      {console.log(state)}
+      {/* {//console.log(state)} */}
       <ListItem
         style={{ cursor: "pointer" }}
         onClick={() => {
@@ -107,7 +103,12 @@ export default function FormDialog(props) {
         onClose={handleClose}
         aria-labelledby="form-dialog-title"
       >
-        <DialogTitle id="form-dialog-title">Upload Files</DialogTitle>
+        <DialogTitle
+          style={{ backgroundColor: "black", color: "white" }}
+          id="form-dialog-title"
+        >
+          Upload Files
+        </DialogTitle>
         <Divider />
         <DialogContent style={{ margin: "15px 0" }}>
           <DialogContentText>

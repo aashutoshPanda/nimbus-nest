@@ -10,9 +10,9 @@ import MenuList from "@material-ui/core/MenuList";
 import { makeStyles } from "@material-ui/core/styles";
 import UploadFile from "../UploadFileModal/index";
 import UploadFolder from "../UploadFolderModal/index";
-import CloudUploadIcon from "@material-ui/icons/CloudUpload";
+// import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import { Divider } from "@material-ui/core";
-
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
@@ -69,7 +69,7 @@ export default function MenuListComposition(props) {
           variant="contained"
           color="primary"
         >
-          Upload
+          New
         </Button>
         <Popper
           open={open}
@@ -77,6 +77,7 @@ export default function MenuListComposition(props) {
           role={undefined}
           transition
           disablePortal
+          style={{zIndex:"30"}}
         >
           {({ TransitionProps, placement }) => (
             <Grow
@@ -97,17 +98,8 @@ export default function MenuListComposition(props) {
                     id="menu-list-grow"
                     onKeyDown={handleListKeyDown}
                   >
-                    {/* <MenuItem>
-                      <div style={{display:"flex",justifyContent:"center"}}>
-                        <UploadFile parent={props.parent}/>
-                      </div>
-                    </MenuItem>
-                    <MenuItem>
-                      <div style={{display:"flex",justifyContent:"center"}}>
-                        <UploadFolder parent={props.parent}/>
-                      </div>
-                    </MenuItem> */}
                     <UploadFile
+                      onClick={() => setOpen(false)}
                       modalClose={handleClose}
                       parent={props.parent}
                     />

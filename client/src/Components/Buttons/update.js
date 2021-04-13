@@ -1,23 +1,20 @@
 import React from "react";
-import Button from "@material-ui/core/Button";
-import TextField from "@material-ui/core/TextField";
+
 import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-// import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from "@material-ui/core/DialogTitle";
-// import CreateNewFolderIcon from '@material-ui/icons/CreateNewFolder';
 import EditIcon from "@material-ui/icons/Edit";
+import MenuItem from "@material-ui/core/MenuItem";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import { ListItemText } from "@material-ui/core";
 
-import {
-  updateAsync,
-  selectCheckedFolderKeys,
-  selectCheckedFileKeys,
-} from "../../store/slices/checkBoxSlice";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 // import DisabledTabs from '../File Structure/NavigationTabs/disabledTabs'
+import { updateChildAsync } from "../../store/slices/structureSlice";
+import FocusInput from "./FocusInput";
 
-export default function FormDialog() {
+export default function UpdateNameModal({
+  handleCloseOfRightClickMenu,
+  ...data
+}) {
   const [open, setOpen] = React.useState(false);
 
   const dispatch = useDispatch();
@@ -26,94 +23,48 @@ export default function FormDialog() {
     setOpen(true);
   };
 
-  const checkedFolderKeys = useSelector(selectCheckedFolderKeys);
-  const checkedFileKeys = useSelector(selectCheckedFileKeys);
-
-  const [data, setData] = React.useState("");
-
-  let inputChangeHandler = (e) => {
-    e.preventDefault();
-    setData(e.target.value);
-  };
-
   const handleClose = () => {
     setOpen(false);
   };
-
-  const handleUpdate = () => {
-    handleClose();
-
-    console.log("Files", checkedFileKeys);
-    console.log("Folders", checkedFolderKeys);
-
-    let newFileData = {};
-    let newFolderData = {};
-
-    if (checkedFileKeys.length !== 0) {
-      newFileData = {
-        payload:{
-          id: checkedFileKeys[0].id,
-          name: data,
-        },
-        index:checkedFileKeys[0].index
-      };
+  const handleUpdate = (newName) => {
+    dispatch(updateChildAsync({ id, type, name: newName }));
+    setOpen(false);
+  };
+  const handleKeyDown = (event, newName) => {
+    //console.log("down to earth");
+    if (event.key === "Enter") {
+      dispatch(updateChildAsync({ id, type, name: newName }));
+      setOpen(false);
     }
-
-    if (checkedFolderKeys.length !== 0) {
-      newFolderData = {
-        payload:{
-          id: checkedFolderKeys[0].id,
-          name: data,
-        },
-        index:checkedFolderKeys[0].index
-      };
-    }
-
-    dispatch(updateAsync(newFileData, newFolderData));
   };
 
-  let deactive =
-    checkedFolderKeys.length + checkedFileKeys.length !== 1 ? true : false;
-
+  const { id, name, type } = data;
+  // //console.log({ data });
+  // //console.log({ id, name, type });
+  const handleClick = () => {
+    handleCloseOfRightClickMenu();
+    handleClickOpen();
+  };
   return (
-    <div style={{ margin: "10px" }}>
-      <Button
-        startIcon={<EditIcon />}
-        disabled={deactive}
-        variant="outlined"
-        color="primary"
-        onClick={handleClickOpen}
-      >
-        Update
-      </Button>
+    <div>
+      <MenuItem onClick={handleClick}>
+        <ListItemIcon>
+          <EditIcon color="primary" />
+        </ListItemIcon>
+        <ListItemText style={{ paddingRight: "15px" }}>Rename</ListItemText>
+      </MenuItem>
       <Dialog
         open={open}
         onClose={handleClose}
         aria-labelledby="form-dialog-title"
+        fullWidth
       >
-        <DialogTitle id="form-dialog-title">Update Name</DialogTitle>
-        <DialogContent>
-          {/* <DialogContentText>
-            Location - <DisabledTabs/>
-          </DialogContentText> */}
-          <TextField
-            autoFocus
-            margin="dense"
-            id="name"
-            label="New Name"
-            type="text"
-            onChange={inputChangeHandler}
-            fullWidth
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="secondary">
-            Cancel
-          </Button>
-          <Button onClick={handleUpdate} color="primary">
-            Update
-          </Button>
-        </DialogActions>
+        <FocusInput
+          nameOfSelected={name}
+          handleClose={handleClose}
+          handleUpdate={handleUpdate}
+          handleKeyDown={handleKeyDown}
+        />
       </Dialog>
     </div>
   );

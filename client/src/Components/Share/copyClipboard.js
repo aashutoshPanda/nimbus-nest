@@ -20,13 +20,13 @@ export default class Clipboard extends Component {
 
   render() {
     return (
-      <div>
+      <div style={{marginBottom:"15px"}}>
         <div>
           <textarea
-            cols={80}
+            cols={65}
             rows={1}
             ref={(textarea) => this.textArea = textarea}
-            value={`${frontURL}/share/${this.props.author}/${this.props.id}`}
+            value={`${frontURL}/share/${this.props.type}/${this.props.id}`}
             style={{border:"1px dashed grey",padding:"5px",borderRadius:"5px",fontWeight:"bold"}}
           />
         </div>

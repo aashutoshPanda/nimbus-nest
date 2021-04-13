@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
@@ -22,11 +22,26 @@ import { Link } from "react-router-dom";
 import { emptykeys } from "../../store/slices/checkBoxSlice";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 
-const drawerWidth = 240;
+import Profile from "../Profile/profile";
+import { Copyright } from "../Forms/login";
+import { getProfileAsync } from "../../store/slices/authSlice";
+import { asyncLocalStorage } from "../../Utilities/localStoreAsync";
+import { setCurrentPage } from "../../store/slices/loaderSlice";
+import { getFolderPickerView, pathAsync } from "../../store/slices/moveSlice";
+
+import Search from "./search";
+import { resetSelection } from "../../store/slices/structureSlice";
+
+const drawerWidth = 280;
 
 const theme = createMuiTheme({
   typography: {
     fontFamily: "Nunito",
+  },
+  palette: {
+    primary: {
+      main: "#1e2022",
+    },
   },
 });
 
@@ -59,13 +74,27 @@ export default function ClippedDrawer(props) {
   const dispatch = useDispatch();
 
   const handlePageChange = (e, data) => {
-    console.log(data);
+    //console.log(data);
     dispatch(emptykeys());
   };
 
+  // let id = window.localStorage.getItem("id");
+  const [id, setId] = React.useState(null);
+
+  useEffect(() => {
+    asyncLocalStorage.getItem("id").then((res) => {
+      dispatch(getProfileAsync(res));
+      setId(res);
+    });
+
+    dispatch(getFolderPickerView("ROOT"));
+    dispatch(pathAsync({ id: "ROOT", type: "FOLDER" }));
+    // dispatch(getProfileAsync(id));
+  }, [dispatch, id]);
+
   const handleLogout = () => {
-    window.localStorage.removeItem("session");
-    window.localStorage.removeItem("author");
+    window.localStorage.removeItem("access_token");
+    window.localStorage.removeItem("id");
   };
 
   return (
@@ -74,16 +103,19 @@ export default function ClippedDrawer(props) {
         <CssBaseline />
         <AppBar position="fixed" className={classes.appBar}>
           <Toolbar>
-            <Typography style={{ fontWeight: "bold" }} variant="h6">
-              Vicara-T4
-            </Typography>
             <div
               style={{
                 display: "flex",
-                justifyContent: "flex-end",
-                width: "90%",
+                width: "100%",
+                justifyContent: "space-between",
+                alignItems: "center",
+                margin: "0 20px",
               }}
             >
+              <Typography style={{ fontWeight: "bold" }} variant="h6">
+                Vicara-T4
+              </Typography>
+              <Search />
               <Link
                 style={{ textDecoration: "none", color: "white" }}
                 to="/login"
@@ -108,25 +140,45 @@ export default function ClippedDrawer(props) {
           }}
         >
           <Toolbar />
+          <Profile />
+          <Divider />
           <div className={classes.drawerContainer}>
-            <List>
-              {sideNav.map((data, index) => (
-                <Link
-                  style={{ textDecoration: "none" }}
-                  to={data.name === "Home" ? "/drive/ROOT" : `/${data.name}`}
-                >
-                  <ListItem
-                    button
-                    onClick={(e) => handlePageChange(e, data.name)}
-                    key={data.name}
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <List>
+                {sideNav.map((data, index) => (
+                  <Link
+                    style={{ textDecoration: "none" }}
+                    onClick={() => {
+                      dispatch(setCurrentPage(data.name));
+                      dispatch(resetSelection());
+                    }}
+                    to={
+                      data.name === "Home"
+                        ? `/drive/${id}`
+                        : data.name === "Shared with Me"
+                        ? `/shared-with-me`
+                        : `/${data.name}`
+                    }
                   >
-                    <ListItemIcon>{data.icon}</ListItemIcon>
-                    <ListItemText primary={data.name} />
-                  </ListItem>
-                </Link>
-              ))}
-            </List>
+                    <ListItem
+                      button
+                      onClick={(e) => handlePageChange(e, data.name)}
+                      key={data.name}
+                    >
+                      <ListItemIcon>{data.icon}</ListItemIcon>
+                      <ListItemText
+                        style={{ color: "black" }}
+                        primary={data.name}
+                      />
+                    </ListItem>
+                  </Link>
+                ))}
+              </List>
+            </div>
             <Divider />
+            <div style={{ marginTop: "25px" }}>
+              <Copyright />
+            </div>
           </div>
         </Drawer>
         <main className={classes.content}>

@@ -5,10 +5,10 @@ import API from "../axios";
 const PrivateRoute = ({ component: Component, ...rest }) => {
   let [isAuthenticated, setIsAuthenticated] = useState(null);
   useEffect(() => {
-    let token = window.localStorage.getItem("session");
+    let token = window.localStorage.getItem("access_token");
     if (token === null) setIsAuthenticated(false);
     else {
-      API.defaults.headers.common["Authorization"] = `Token ${token}`;
+      API.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       setIsAuthenticated(true);
     }
     // eslint-disable-next-line

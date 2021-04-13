@@ -32,6 +32,7 @@ export default function FormDialog(props) {
     setData({
       name: e.target.value,
       PARENT: props.id,
+      REPLACE: "false",
     });
   };
 
@@ -45,7 +46,7 @@ export default function FormDialog(props) {
   };
 
   return (
-    <div style={{margin:"10px"}}>
+    <div style={{ margin: "10px" }}>
       <Button
         startIcon={<CreateNewFolderIcon />}
         variant="outlined"

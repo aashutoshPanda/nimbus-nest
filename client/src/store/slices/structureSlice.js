@@ -1,8 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 import API from "../../axios";
-import { normalLoader, skeletonLoader } from "./loaderSlice";
-
+import { normalLoader, skeletonLoader, navSearchLoader } from "./loaderSlice";
+import { updateStorageData } from "./authSlice";
 // import {updateSharePrivacy} from './shareSlice'
+import { success, error } from "./logSlice";
 
 export const structureSlice = createSlice({
   name: "structure",
@@ -14,6 +15,15 @@ export const structureSlice = createSlice({
         id: "ROOT",
       },
     ],
+    children: {},
+    navSearchResults: [],
+    orderBy: "last_modified",
+    replaceModal: {
+      show: false,
+      type: "",
+      data: [],
+      requestData: {},
+    },
   },
   reducers: {
     updateStructure: (state, action) => {
@@ -33,7 +43,7 @@ export const structureSlice = createSlice({
     },
     updatePrivacy: (state, action) => {
       let res = action.payload;
-      console.log(res);
+      //console.log(res);
       state.currentDisplayStructure[res.key].privacy = res.payload.privacy;
     },
     updateFav: (state, action) => {
@@ -42,13 +52,13 @@ export const structureSlice = createSlice({
     },
     popFromCurrentStack: (state, action) => {
       let res = action.payload;
-      console.log(res);
+      //console.log(res);
       function check(data) {
         return parseInt(res.data.id) === data.id && res.type === data.type;
       }
       let index = state.currentDisplayStructure.findIndex(check);
 
-      console.log(index);
+      //console.log(index);
 
       if (index !== -1) {
         state.currentDisplayStructure.splice(index, 1);
@@ -56,6 +66,73 @@ export const structureSlice = createSlice({
     },
     updatePath: (state, action) => {
       state.currentPath = action.payload;
+    },
+    updateAfterShare: (state, action) => {
+      let index = action.payload.index;
+      let users = action.payload.users;
+
+      state.currentDisplayStructure[index].shared_among = users;
+    },
+    updateNavSearchResults: (state, action) => {
+      state.navSearchResults = action.payload;
+    },
+    updateChild: (state, action) => {
+      const child = action.payload;
+      const id = `${child.type}_${child.id}`;
+      state.children[id] = {
+        ...child,
+        selected: false,
+      };
+    },
+    resetChildren: (state, action) => {
+      state.children = {};
+    },
+    updateSelection: (state, action) => {
+      const { id, type, selected } = action.payload;
+      const stateId = `${type}_${id}`;
+      state.children[stateId] = {
+        ...state.children[stateId],
+        selected,
+      };
+    },
+    resetSelection: (state, action) => {
+      const childrenMap = state.children;
+
+      Object.keys(childrenMap).forEach(function (key, index) {
+        state.children[key] = {
+          ...state.children[key],
+          selected: false,
+        };
+      });
+    },
+    selectAll: (state, action) => {
+      const childrenMap = state.children;
+      Object.keys(childrenMap).forEach(function (key, index) {
+        state.children[key] = {
+          ...state.children[key],
+          selected: true,
+        };
+      });
+    },
+    removeFromChildren: (state, action) => {
+      const { id, type } = action.payload;
+
+      console.log("payload", action.payload);
+
+      const stateId = `${type}_${id}`;
+      console.log("removing", stateId);
+      delete state.children[stateId];
+    },
+    setOrderBy: (state, action) => {
+      state.orderBy = action.payload;
+    },
+    toggleReplaceModal: (state, action) => {
+      state.replaceModal.show = !state.replaceModal.show;
+      if (action.payload !== undefined) {
+        state.replaceModal.type = action.payload.type;
+        state.replaceModal.data = action.payload.data;
+        state.replaceModal.requestData = action.payload.requestData;
+      }
     },
   },
 });
@@ -68,10 +145,20 @@ export const {
   updateFav,
   updatePath,
   updatePrivacy,
+  updateAfterShare,
+  updateChild,
+  resetChildren,
+  updateSelection,
+  resetSelection,
+  selectAll,
+  updateNavSearchResults,
+  removeFromChildren,
+  setOrderBy,
+  toggleReplaceModal,
 } = structureSlice.actions;
 
 export const structureAsync = (uni_id) => (dispatch) => {
-  console.log("Sending request for /api/folder/");
+  //console.log("Sending request for /api/folder/");
   dispatch(skeletonLoader());
   API.get(`/api/folder/`, {
     params: {
@@ -79,12 +166,69 @@ export const structureAsync = (uni_id) => (dispatch) => {
     },
   })
     .then((res) => {
-      dispatch(updateStructure(res.data));
+      res.data.children.forEach((child) => dispatch(updateChild(child)));
       dispatch(skeletonLoader());
     })
     .catch((err) => {
-      console.log(err);
+      //console.log(err);
       dispatch(skeletonLoader());
+      // dispatch(error(err.response.data.message));
+    });
+};
+export const recentStructureAsync = () => (dispatch) => {
+  dispatch(skeletonLoader());
+  API.get(`/api/recent/`)
+    .then((res) => {
+      res.data.forEach((child) => dispatch(updateChild(child)));
+      dispatch(skeletonLoader());
+    })
+    .catch((err) => {
+      dispatch(skeletonLoader());
+      //console.log(err.response);
+      dispatch(error(err.response.data.message));
+    });
+};
+
+export const favStructureAsync = () => (dispatch) => {
+  dispatch(skeletonLoader());
+  API.get(`/api/favourites/`)
+    .then((res) => {
+      res.data.forEach((child) => dispatch(updateChild(child)));
+      dispatch(skeletonLoader());
+    })
+    .catch((err) => {
+      dispatch(skeletonLoader());
+      //console.log(err.response);
+      dispatch(error(err.response.data.message));
+    });
+};
+
+export const sharedStructureAsync = () => (dispatch) => {
+  dispatch(skeletonLoader());
+  API.get(`/api/shared-with-me/`)
+    .then((res) => {
+      res.data.forEach((child) => dispatch(updateChild(child)));
+      dispatch(skeletonLoader());
+    })
+    .catch((err) => {
+      dispatch(skeletonLoader());
+      //console.log(err.response);
+      dispatch(error(err.response.data.message));
+    });
+};
+
+export const trashStructureAsync = () => (dispatch) => {
+  dispatch(skeletonLoader());
+  API.get(`/api/trash/`)
+    .then((res) => {
+      res.data.forEach((child) => dispatch(updateChild(child)));
+      dispatch(skeletonLoader());
+      // dispatch(pathParse(res.data));
+    })
+    .catch((err) => {
+      dispatch(skeletonLoader());
+      //console.log(err.response);
+      dispatch(error(err.response.data.message));
     });
 };
 
@@ -92,65 +236,73 @@ export const addFolderAsync = (data) => (dispatch) => {
   dispatch(normalLoader());
   API.post("/api/folder/", data)
     .then((res) => {
-      console.log(res);
-      let newData = {
-        resData: res.data,
-        type: "folder",
-      };
-      dispatch(pushToCurrentStack(newData));
+      console.log("succ in add folder");
+      console.log({ res });
+      dispatch(updateChild(res.data));
+      const { readable, ratio } = res.data;
+      dispatch(updateStorageData({ readable, ratio }));
       dispatch(normalLoader());
+      dispatch(success("Your Action was Successful"));
     })
     .catch((err) => {
-      console.log(err);
       dispatch(normalLoader());
+      const statusCode = err.response.request.status;
+
+      if (
+        statusCode === 400 &&
+        err.response.data.error_code === "DUPLICATE_FOLDER"
+      ) {
+        dispatch(
+          toggleReplaceModal({
+            type: "folder",
+            data: err.response.data.data,
+            requestData: {
+              url: "/api/folder/",
+              formData: { ...data, REPLACE: "true" },
+            },
+          })
+        );
+      } else {
+        dispatch(error(err.response.data.message));
+      }
     });
 };
 
-export const addFavouriteAsync = (data) => (dispatch) => {
-  if (data.type === "file") {
-    API.patch("/api/file/", data.payload)
+export const updateChildAsync = (data) => (dispatch) => {
+  const { type, ...rest } = data;
+  dispatch(normalLoader());
+  if (type === "file") {
+    API.patch("/api/file/", rest)
       .then((res) => {
-        dispatch(updateFav(data));
+        dispatch(updateChild(res.data));
+        dispatch(normalLoader());
+        dispatch(resetSelection());
       })
       .catch((err) => {
-        console.log(err);
+        //console.log(err);
+        dispatch(normalLoader());
+        dispatch(resetSelection());
       });
   } else {
-    API.patch("/api/folder/", data.payload)
+    API.patch("/api/folder/", rest)
       .then((res) => {
-        dispatch(updateFav(data));
+        dispatch(updateChild(res.data));
+        dispatch(normalLoader());
+        dispatch(resetSelection());
       })
       .catch((err) => {
-        console.log(err);
+        //console.log(err.response);
+        dispatch(error(err.response.data.message));
+        dispatch(normalLoader());
+        dispatch(resetSelection());
       });
   }
 };
-
-export const privacyAsync = (data) => (dispatch) => {
-  if (data.type === "file") {
-    API.patch("/api/file/", data.payload)
-      .then((res) => {
-        dispatch(updatePrivacy(data));
-        // dispatch(updateSharePrivacy())
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  } else {
-    API.patch("/api/folder/", data.payload)
-      .then((res) => {
-        dispatch(updatePrivacy(data));
-        // dispatch(updateSharePrivacy())
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
-};
-
+export const privacyAsync = 5;
 export const pathAsync = (data) => (dispatch) => {
-  console.log("asking for path ");
-  console.log("token now = ", window.localStorage.getItem("session"));
+  //console.log("asking for path ");
+  //console.log("token now = ", window.localStorage.getItem("access_token"));
+  if (data.id === "ROOT") return;
   API.get(`/api/path/`, {
     params: {
       id: data.id,
@@ -158,11 +310,12 @@ export const pathAsync = (data) => (dispatch) => {
     },
   })
     .then((res) => {
-      console.log("updating path for id = ", data, " with ", res);
+      //console.log("updating path for id = ", data, " with ", res);
       dispatch(updatePath(res.data));
     })
     .catch((err) => {
-      console.log(err);
+      //console.log(err.response);
+      dispatch(error(err.response.data.message));
     });
 };
 
@@ -175,18 +328,78 @@ export const getFileAsync = (data) => (dispatch) => {
     },
   })
     .then((res) => {
-      console.log("in blobbbbbbbbbbbbbb", res.data["url"]);
+      // //console.log("in blobbbbbbbbbbbbbb", res.data["url"]);
+      window.open(res.data.url);
       // saveAs(res.data["url"], "image.jpg");
       dispatch(normalLoader());
     })
     .catch((err) => {
-      console.log("ommaago its an errro", err);
+      // //console.log("ommaago its an errro", err);
       dispatch(normalLoader());
+      //console.log(err.response);
+      dispatch(error(err.response.data.message));
+    });
+};
+
+export const searchFileFolderAsync = (value) => (dispatch) => {
+  dispatch(navSearchLoader());
+  API.get("/api/search-file-folder/", {
+    params: {
+      query: value,
+    },
+  })
+    .then((res) => {
+      dispatch(updateNavSearchResults(res.data));
+      dispatch(navSearchLoader());
+    })
+    .catch((err) => {
+      //console.log(err);
+      dispatch(error(err.response.data.message));
+      dispatch(navSearchLoader());
     });
 };
 
 export const selectStructure = (state) =>
   state.structure.currentDisplayStructure;
-export const navStructure = (state) => state.structure.currentPath;
 
+export const selectChildren = (state) => {
+  const childrenMap = state.structure.children;
+  const childrenArray = Object.keys(childrenMap).map(function (key, index) {
+    return childrenMap[key];
+  });
+  return childrenArray;
+};
+export const selectFavourite = (state) => {
+  const childrenMap = state.structure.children;
+  const childrenArray = Object.keys(childrenMap).map(function (key, index) {
+    return childrenMap[key];
+  });
+  const favouriteArray = childrenArray.filter((ele) => ele.favourite);
+  return favouriteArray;
+};
+export const selectChecked = (state) => {
+  const childrenMap = state.structure.children;
+  const childrenArray = Object.keys(childrenMap).map(function (key, index) {
+    return childrenMap[key];
+  });
+  const checkedArray = childrenArray.filter((ele) => ele.selected);
+  return checkedArray;
+};
+
+export const selectCheckedCount = (state) => {
+  let checkedCount = 0;
+  const childrenMap = state.structure.children;
+  Object.keys(childrenMap).forEach(function (key, index) {
+    if (childrenMap[key].selected) {
+      checkedCount++;
+    }
+  });
+  return checkedCount;
+};
+export const navStructure = (state) => state.structure.currentPath;
+export const selectOrderBy = (state) => state.structure.orderBy;
+export const selectNavSearchResults = (state) =>
+  state.structure.navSearchResults;
+
+export const selectReplaceModal = (state) => state.structure.replaceModal;
 export default structureSlice.reducer;

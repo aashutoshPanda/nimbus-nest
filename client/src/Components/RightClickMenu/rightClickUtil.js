@@ -1,23 +1,66 @@
 import React from "react";
-// import {useDispatch} from 'react-redux'
+import { useSelector, useDispatch } from "react-redux";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 // import Typography from '@material-ui/core/Typography';
 import ListItemIcon from "@material-ui/core/ListItemIcon";
-import EditIcon from "@material-ui/icons/Edit";
-import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
-import ShareIcon from "@material-ui/icons/Share";
+// import EditIcon from "@material-ui/icons/Edit";
+import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 import { ListItemText } from "@material-ui/core";
-
+import {
+  downloadAsync,
+  multipleDownloadAsync,
+} from "../../store/slices/loaderSlice";
 import Share from "../Share/index";
-
+import UpdateNameModal from "../Buttons/update";
+import Delete from "../Buttons/delete";
+import Trash from "../Buttons/moveToTrash";
+import Restore from "../Buttons/restore";
+import Move from "../Buttons/Move/index";
+import { withRouter } from "react-router-dom";
+import { rightClickOptions } from "./rightClickOptions";
+import {
+  selectChecked,
+  selectCheckedCount,
+  updateSelection,
+} from "../../store/slices/structureSlice";
 const initialState = {
   mouseX: null,
   mouseY: null,
 };
 
-export default function ContextMenu(props) {
+function ContextMenu(props) {
   const [state, setState] = React.useState(initialState);
+  const dispatch = useDispatch();
+  const { data } = props;
+  const { id, type } = data;
+
+  const { path } = props.match;
+  //console.log({ path });
+  //console.log({ rightClickOptions });
+  const {
+    showShare,
+    showTrash,
+    showDownload,
+    showDelete,
+    showRestore,
+    showUpdate,
+    showMove,
+  } = rightClickOptions[path];
+
+  const checkedFileFolder = useSelector(selectChecked);
+
+  const fetchIdAndType = checkedFileFolder.map((ele) => {
+    let res = {
+      type: ele.type,
+      id: ele.id,
+    };
+    return res;
+  });
+
+  const dataForMultipleDownload = {
+    CHILDREN: fetchIdAndType,
+  };
 
   const handleClick = (event) => {
     event.preventDefault();
@@ -25,15 +68,19 @@ export default function ContextMenu(props) {
       mouseX: event.clientX - 2,
       mouseY: event.clientY - 4,
     });
+    dispatch(updateSelection({ id, type, selected: true }));
   };
 
   const handleClose = () => {
     setState(initialState);
+    // dispatch(resetSelection());
   };
+  const checkedCount = useSelector(selectCheckedCount);
 
   return (
     <div onContextMenu={handleClick}>
       {props.children}
+
       <Menu
         keepMounted
         open={state.mouseY !== null}
@@ -45,27 +92,56 @@ export default function ContextMenu(props) {
             : undefined
         }
       >
-        <MenuItem onClick={handleClose}>
-          <ListItemIcon>
-            <EditIcon color="primary" />
-          </ListItemIcon>
-          <ListItemText style={{ paddingRight: "15px" }}>Rename</ListItemText>
-        </MenuItem>
-        {props.data.type === "FILE" ? (
-          <MenuItem onClick={handleClose}>
+        {showDownload ? (
+          <MenuItem
+            onClick={() => {
+              handleClose();
+              if (checkedCount > 1) {
+                dispatch(multipleDownloadAsync(dataForMultipleDownload));
+              } else {
+                dispatch(downloadAsync(props.data));
+              }
+            }}
+          >
             <ListItemIcon>
-              <ShareIcon color="primary" />
+              <CloudDownloadIcon color="secondary" />
             </ListItemIcon>
-            <Share data={props.data.id} />
+            <ListItemText style={{ paddingRight: "15px" }}>
+              Download
+            </ListItemText>
           </MenuItem>
         ) : null}
-        <MenuItem onClick={handleClose}>
-          <ListItemIcon>
-            <DeleteOutlineIcon color="secondary" />
-          </ListItemIcon>
-          <ListItemText style={{ paddingRight: "15px" }}>Remove</ListItemText>
-        </MenuItem>
+
+        {checkedCount === 1 ? (
+          <>
+            {showShare ? (
+              <Share data={props.data} menuClose={handleClose} />
+            ) : null}
+
+            {showUpdate ? (
+              <UpdateNameModal
+                handleCloseOfRightClickMenu={handleClose}
+                {...data}
+              />
+            ) : null}
+          </>
+        ) : null}
+
+        {showMove ? (
+          <Move handleCloseOfRightClickMenu={handleClose} props={props} />
+        ) : null}
+
+        {showTrash ? (
+          <Trash handleCloseOfRightClickMenu={handleClose} {...data} />
+        ) : null}
+        {showRestore ? (
+          <Restore handleCloseOfRightClickMenu={handleClose} {...data} />
+        ) : null}
+        {showDelete ? (
+          <Delete handleCloseOfRightClickMenu={handleClose} {...data} />
+        ) : null}
       </Menu>
     </div>
   );
 }
+export default withRouter(ContextMenu);
