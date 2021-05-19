@@ -9,28 +9,31 @@ Make sure you have [python3](https://www.python.org/downloads/) and [git](https:
 
 ## Getting Started
 
-Setup project environment-
+```
+$ git clone https://github.com/aashutoshPanda/vicara-storage.git
+$ cd vicara-storage
+```
+
+## Backend
 
 ```bash
-$ sudo apt-get update -y
-$ sudo apt-get install python3-pip -y
-$ sudo apt-get install python3-venv -y
-
-$ git clone https://github.com/Crio-Winter-of-Doing-2021/VICARA-T4.git
-$ cd VICARA-T4
+$ git clone https://github.com/aashutoshPanda/vicara-storage.git
+$ cd vicara-storage
 
 $ python3 -m venv env
 $ source env/bin/activate
-$ source project-env/bin/activate
-$ pip3 install -r requirements.txt
+$ pip install -r requirements.txt
 
 $ python manage.py migrate
-$ python manage.py migrate --run-syncdb
 $ python manage.py runserver
 ```
 
 ## Frontend
-You can cd into the client folder, and follow the readme there.
+
+```bash
+$ cd client
+$ npm start
+```
 
 ## Contributing
 We love contributions, so please feel free to add issues fix bugs, improve things, provide documentation and make a PR.
