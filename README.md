@@ -2,8 +2,8 @@
 
 Team ID: VICARA-T4 | Team Members: [Ashutosh Panda](https://github.com/aashutoshPanda) &amp; [Pratik Chaudhary](https://github.com/pratik0204)
 
-- WEBSITE HOSTED: https://vicara.netlify.app/
-- BACKEND-HOSTED: http://vicara-drf-backend.herokuapp.com/
+- FRONTEND PROD: https://vicara.netlify.app/
+- BACKEND PROD: http://vicara-drf-backend.herokuapp.com/
 
 Make sure you have [python3](https://www.python.org/downloads/) and [git](https://git-scm.com/) installed on your local machine.
 
