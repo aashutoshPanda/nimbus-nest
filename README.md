@@ -1,4 +1,7 @@
-# [VICARA-T4](https://vicara.netlify.app/)-#[CWOD](https://www.crio.do/crio-winter-of-doing/) Stage3
+# [VICARA-T4](https://vicara.netlify.app/)-#[CWOD](https://www.crio.do/crio-winter-of-doing/) Stage3 - 2021
+<a href="https://ibb.co/2cyxSwk">
+  <img src="https://i.ibb.co/HGV6C0H/Screenshot-from-2021-05-19-14-43-17.png" alt="Screenshot-from-2021-05-19-14-43-17" border="0">
+</a>
 
 Team ID: VICARA-T4 | Team Members: [Ashutosh Panda](https://github.com/aashutoshPanda) &amp; [Pratik Chaudhary](https://github.com/pratik0204)
 
