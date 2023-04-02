@@ -1,7 +1,7 @@
 Team Members: [Ashutosh Panda](https://github.com/aashutoshPanda) &amp; [Pratik Chaudhary](https://github.com/pratik0204)
 
-- WEBSITE HOSTED: https://vicara.netlify.app/
-- BACKEND-HOSTED: http://vicara-drf-backend.herokuapp.com/
+- WEBSITE HOSTED: https://nimbus-nest.netlify.app
+- BACKEND-HOSTED: https://nimbus-nest-drf.onrender.com
 
 Make sure you have [python3](https://www.python.org/downloads/) and [git](https://git-scm.com/) installed on your local machine.
 
@@ -15,7 +15,7 @@ $ sudo apt-get install python3-pip -y
 $ sudo apt-get install python3-venv -y
 $ sudo apt-get install libpq-dev -y
 
-$ git clone https://github.com/Crio-Winter-of-Doing-2021/VICARA-T4.git
+$ git clone https://github.com/aashutoshPanda/nimbus-nest.git
 $ cd nimbus-nest
 
 $ python3 -m venv env
