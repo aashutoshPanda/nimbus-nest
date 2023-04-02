@@ -138,30 +138,6 @@ function App({ parent, modalClose }) {
                 Drop files here
               </Typography>
             </div>
-            <Typography
-              style={{
-                margin: "10px",
-                textAlign: "center",
-                color: "grey",
-                fontStyle: "italic",
-                fontSize: "12px",
-              }}
-            >
-              OR
-            </Typography>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                color: "gray",
-              }}
-            >
-              <DevicesIcon />
-              <Typography style={{ marginLeft: "10px" }}>
-                Click to select from Device
-              </Typography>
-            </div>
           </div>
         )}
       </div>
