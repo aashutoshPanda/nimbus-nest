@@ -1,4 +1,3 @@
-from celery import shared_task
 from .utils import sendMail
 
 MAIL_DEFAULTS = {
@@ -9,7 +8,6 @@ MAIL_DEFAULTS = {
 }
 
 
-@shared_task
 def send_mail(type, user_list, title_kwargs, body_kwargs):
     for user in user_list:
         title = MAIL_DEFAULTS[type]["title"].format(**title_kwargs)
