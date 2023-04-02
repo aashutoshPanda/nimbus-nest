@@ -13,7 +13,6 @@ import {
 import { updateStorageData } from "../../store/slices/authSlice";
 // import Button from '@material-ui/core/Button';
 import { Typography } from "@material-ui/core";
-import DevicesIcon from "@material-ui/icons/Devices";
 import InsertDriveFileOutlinedIcon from "@material-ui/icons/InsertDriveFileOutlined";
 import { error, success } from "../../store/slices/logSlice";
 
