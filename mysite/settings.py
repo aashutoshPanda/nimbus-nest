@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'storages',
-    'django_celery_results',
+    # 'django_celery_results',
     # social login
     'oauth2_provider',
     'social_django',

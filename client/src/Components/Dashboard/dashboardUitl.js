@@ -110,7 +110,7 @@ export default function ClippedDrawer(props) {
               }}
             >
               <Typography style={{ fontWeight: "bold" }} variant="h6">
-                Vicara-T4
+                NimbusNest
               </Typography>
               <Search />
               <Link

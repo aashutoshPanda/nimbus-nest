@@ -31,7 +31,7 @@ export function Copyright() {
       <Typography variant="body2" color="textSecondary" align="center">
         {"Copyright © "}
         <Link color="inherit" href={frontURL}>
-          Vicara-T4
+          NimbusNest
         </Link>{" "}
         {new Date().getFullYear()}
         {"."}
@@ -112,7 +112,7 @@ export default function SignIn(props) {
           component="h1"
           variant="h4"
         >
-          Vicara T4
+          NimbusNest
         </Typography>
 
         <div style={{ margin: "10px 0", width: "100%" }}>

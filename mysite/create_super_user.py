@@ -1,6 +1,10 @@
+from django.conf import settings
+settings.configure()
+
 from django.contrib.auth.models import User
 from decouple import config
 from django.db import IntegrityError
+
 
 DJANGO_SU_NAME = config('DJANGO_SU_NAME')
 DJANGO_SU_EMAIL = config('DJANGO_SU_EMAIL')

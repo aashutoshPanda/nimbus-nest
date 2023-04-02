@@ -41,7 +41,7 @@ export const steps = [
     content:()=>(
       <div>
         <div style={{marginTop:"15px",textAlign:"center",fontSize:"15px"}}>
-          Welcome to Vicara T4, go ahead and check all the functionalities we have to offer!
+          Welcome to NimbusNest, go ahead and check all the functionalities we have to offer!
         </div>
       </div>
     ),
