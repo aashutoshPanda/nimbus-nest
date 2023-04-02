@@ -3,6 +3,12 @@ Team Members: [Ashutosh Panda](https://github.com/aashutoshPanda) &amp; [Pratik 
 - WEBSITE HOSTED: https://nimbus-nest.netlify.app
 - BACKEND-HOSTED: https://nimbus-nest-drf.onrender.com
 
+<p align="center">
+  <a href="https://ibb.co/2cyxSwk">
+    <img src="https://i.ibb.co/HGV6C0H/Screenshot-from-2021-05-19-14-43-17.png" alt="Vicara Preview" border="0">
+  </a>
+</p>
+
 Make sure you have [python3](https://www.python.org/downloads/) and [git](https://git-scm.com/) installed on your local machine.
 
 ## Getting Started
