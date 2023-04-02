@@ -9,14 +9,14 @@ dj-database-url==0.5.0
 django-cors-headers==3.5.0
 dj-database-url==0.5.0
 boto3
-django-storages
+django-storages==1.12.3
 python-decouple
 varname
 humanize==3.3.0
 cloudinary==1.22.0
 django-heroku
 celery==5.0.5
-django-celery-results
+django-celery-results==2.0.1
 redis
 coverage
-drf_social_oauth2
+drf_social_oauth2==4.0.0
