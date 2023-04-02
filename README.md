@@ -11,6 +11,29 @@ Team Members: [Ashutosh Panda](https://github.com/aashutoshPanda) &amp; [Pratik 
 
 Make sure you have [python3](https://www.python.org/downloads/) and [git](https://git-scm.com/) installed on your local machine.
 
+### Features
+1. Upload & Download - files and folders with Drag & Drop
+  - Also you can upload with a downloadable url
+  - Folders are downloaded as zip
+
+2. Mark your files or Folders as favourite for quick access
+
+3. Trash - Upon deletion your valuables in trash, you can also permanently delete from there
+
+4. Share files & folders with your peers with a shareable url!
+  - All the files shared with you will be present in 'Shared with Me' section
+
+5. Admin panel to allocate max disk space for a user
+  - Initially all users are provided with 100 MB of storage
+  - Storage can be upgraded to any limit - We store our files in AWS S3
+
+6. Google OAuth for quick and easy logins
+
+7. Move folders and files across the drive
+
+8. File preview directly in the drive for images, PDFs, etc.
+
+
 ## Getting Started
 
 Setup project environment-
