@@ -33,6 +33,8 @@ Make sure you have [python3](https://www.python.org/downloads/) and [git](https:
 
 8. File preview directly in the drive for images, PDFs, etc.
 
+9. Tour of the platform for new users, you can also get a tour with the 'HELP' button at the top-right corner. 
+
 
 ## Getting Started
 
